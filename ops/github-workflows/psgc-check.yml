@@ -1,0 +1,81 @@
+# Weekly check for a new PSA PSGC release.
+#
+# psa.gov.ph sits behind a Cloudflare challenge, so this job is usually blocked from GitHub's runners.
+# That is expected and NOT an error: the job logs a warning and finishes green.
+# The primary updater is an external browser-based weekly check that downloads the file and runs
+# `npm run stage -- <file.xlsx>` (see README "Update flow").
+#
+# If the page and file ARE reachable and the repo has the DATABASE_URL_* secrets, the job stages the
+# release into the STAGING database and posts the change summary + review link. It never promotes:
+# promotion to MAIN always requires a human approval at /admin/review.
+name: PSGC weekly check
+
+on:
+  schedule:
+    - cron: "0 1 * * 1" # Mondays 01:00 UTC (09:00 Asia/Manila)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: psgc-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check psa.gov.ph (fails gracefully when Cloudflare blocks)
+        id: psa
+        continue-on-error: true
+        env:
+          PSGC_API_BASE_URL: ${{ vars.PSGC_API_BASE_URL }}
+        run: node scripts/check-psa.mjs --download-dir downloads
+
+      - name: Stage new release into STAGING (needs DB secrets)
+        id: stage
+        if: steps.psa.outputs.has_new == 'true' && steps.psa.outputs.file != ''
+        continue-on-error: true
+        env:
+          DATABASE_URL_MAIN: ${{ secrets.DATABASE_URL_MAIN }}
+          DATABASE_URL_STAGING: ${{ secrets.DATABASE_URL_STAGING }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          PUBLIC_BASE_URL: ${{ vars.PSGC_API_BASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL_STAGING" ] || [ -z "$DATABASE_URL_MAIN" ]; then
+            echo "::warning::New release ${{ steps.psa.outputs.version }} found, but DATABASE_URL_* secrets are not set; skipping staging."
+            exit 0
+          fi
+          npm ci
+          npm run stage -- "${{ steps.psa.outputs.file }}" --release-name "${{ steps.psa.outputs.release_name }}" --source-file "${{ steps.psa.outputs.url }}"
+          cat changes/latest.md >> "$GITHUB_STEP_SUMMARY"
+          echo "staged=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload change summary
+        if: steps.stage.outputs.staged == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: psgc-changes
+          path: changes/
+
+      - name: Open a review issue
+        if: steps.stage.outputs.staged == 'true' && vars.PSGC_OPEN_ISSUE != 'false'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --title "PSGC ${{ steps.psa.outputs.version }} staged: review required" --body-file changes/latest.md
+
+      - name: Result
+        if: always()
+        run: |
+          echo "blocked=${{ steps.psa.outputs.blocked }} has_new=${{ steps.psa.outputs.has_new }} version=${{ steps.psa.outputs.version }}"
