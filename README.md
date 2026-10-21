@@ -22,6 +22,13 @@ Per-region counts are also verified against the National Summary sheet inside PS
 - **Integration plan**: [`docs/INTEGRATION_PLAN.md`](docs/INTEGRATION_PLAN.md).
 - **Admin review** (`/admin/review`): approve or reject staged PSA releases.
 
+## Deployment
+
+- **Production**: https://psgc-api-liard.vercel.app (Vercel project `psgc-api`, region `sin1`)
+- **Databases**: two separate Neon projects via the Vercel Marketplace, `psgc-api-main` (public API reads) and `psgc-api-staging` (imports), both in AWS ap-southeast-1, using pooled connection strings.
+- **Env vars** (Vercel → Project → Settings → Environment Variables): `DATABASE_URL_MAIN`, `DATABASE_URL_STAGING`, `ADMIN_SECRET`, `PUBLIC_BASE_URL`.
+- Running the CLI from a network that blocks outbound port 5432: set `PSGC_DB_DRIVER=neon-ws` so it uses Neon's WebSocket driver over 443.
+
 ## Architecture: two databases
 
 ```
