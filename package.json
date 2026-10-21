@@ -1,0 +1,43 @@
+{
+  "name": "psgc-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "import": "tsx scripts/import-psgc.ts",
+    "diff": "tsx scripts/diff-psgc.ts",
+    "check:psa": "node scripts/check-psa.mjs",
+    "typecheck": "tsc --noEmit",
+    "stage": "tsx scripts/import-psgc.ts",
+    "promote": "tsx scripts/promote.ts",
+    "reject": "tsx scripts/reject.ts",
+    "rollback": "tsx scripts/rollback.ts",
+    "status": "tsx scripts/status.ts",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "db:seed": "tsx scripts/db-seed.ts"
+  },
+  "dependencies": {
+    "mermaid": "^11.17.2",
+    "next": "16.4.2",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}
