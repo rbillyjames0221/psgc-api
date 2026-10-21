@@ -4,6 +4,7 @@ import { promote, ReleaseError } from "@/lib/release/ops";
 import { backTo, form, wantsJson } from "../../../_shared";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300; // copies ~44k rows between databases
 type Ctx = { params: Promise<{ id: string }> };
 
 /** Approve: copy the staged release into MAIN in one transaction (keeps previous main for rollback). */

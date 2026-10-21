@@ -4,6 +4,7 @@ import { rollback, ReleaseError } from "@/lib/release/ops";
 import { backTo, form, wantsJson } from "../_shared";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300; // copies ~44k rows between databases
 
 /** Roll MAIN back to the previous snapshot. Admin session or X-Admin-Secret header only (not review links). */
 export async function POST(req: Request) {
