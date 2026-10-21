@@ -10,6 +10,7 @@
     "import": "tsx scripts/import-psgc.ts",
     "diff": "tsx scripts/diff-psgc.ts",
     "check:psa": "node scripts/check-psa.mjs",
+    "check:release": "tsx scripts/check-release.ts",
     "typecheck": "tsc --noEmit",
     "stage": "tsx scripts/import-psgc.ts",
     "promote": "tsx scripts/promote.ts",
