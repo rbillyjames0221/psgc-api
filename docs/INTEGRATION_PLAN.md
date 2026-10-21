@@ -8,7 +8,7 @@ Never hard-code the host. Switch between the hosted API, a staging copy, or your
 
 ```bash
 # .env.local in YOUR app
-NEXT_PUBLIC_PSGC_API_BASE_URL=https://<your-psgc-host>
+NEXT_PUBLIC_PSGC_API_BASE_URL=https://psgc.billyjamesramos.com
 ```
 
 All endpoints live under `${BASE}/api/v1`. No API key is required. CORS is open (`Access-Control-Allow-Origin: *`), so browsers can call it directly.
@@ -152,7 +152,7 @@ curl -s "$BASE/api/v1/codes/1380100001"
 
 ```python
 import requests
-BASE = "https://<your-psgc-host>"
+BASE = "https://psgc.billyjamesramos.com"
 r = requests.get(f"{BASE}/api/v1/search", params={"q": "batasan hills", "limit": 5}, timeout=10)
 for hit in r.json()["data"]:
     print(hit["code"], hit["level"], hit["fullName"])

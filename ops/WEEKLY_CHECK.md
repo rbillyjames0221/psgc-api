@@ -72,7 +72,7 @@ The output ends with:
 Staged release 2026-Q4-2027...Z (status: pending) in the STAGING database.
 Diff vs main (2026-Q3): +N added, -N removed, N renamed, N re-parented, N reclassified.
 Change summary: changes/<id>.md (and changes/<id>.json); latest copies in changes/latest.{md,json}
-REVIEW_URL=https://psgc-api-liard.vercel.app/admin/review?release=...&exp=...&sig=...
+REVIEW_URL=https://psgc.billyjamesramos.com/admin/review?release=...&exp=...&sig=...
 RELEASE_ID=2026-Q4-2027...Z
 ```
 
@@ -110,10 +110,10 @@ Audit log:
 
 ## 5. Decide
 
-- **Approve or reject in the browser** at `REVIEW_URL` (or `https://psgc-api-liard.vercel.app/admin/review`).
+- **Approve or reject in the browser** at `REVIEW_URL` (or `https://psgc.billyjamesramos.com/admin/review`).
 - **Or from the CLI:**
   - Promote: `npm run promote -- --release <RELEASE_ID> --yes`. Add `--acknowledge-warnings` only if you have
     reviewed the critical warnings.
   - Reject: `npm run reject -- --release <RELEASE_ID>`.
 - **Undo a bad promotion:** `npm run rollback -- --yes` restores the previous MAIN snapshot. The rollback is audited.
-- **Verify:** `curl -s https://psgc-api-liard.vercel.app/api/v1/meta` returns the new `version` within about 30 s.
+- **Verify:** `curl -s https://psgc.billyjamesramos.com/api/v1/meta` returns the new `version` within about 30 s.
